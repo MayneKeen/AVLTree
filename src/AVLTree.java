@@ -135,7 +135,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     @Override
     public boolean containsValue(Object value) {
         for (Node entry: entries) {
-            if (entry.compareValues(value)) {
+            if (entry.compareValues((Comparable) value)) {
                 return true;
             }
         }
@@ -192,6 +192,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
 
     @Override
     public Set<Key> keySet() {
+        keys.sort(comparator());
         Set<Key> set = new TreeSet<>();
         for(Key key: keys) {
             set.add(key);
@@ -210,6 +211,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
 
     @Override
     public Set<Entry<Key, Value>> entrySet() {
+        entries.sort(Node::compareTo);
         Set<Entry<Key, Value>> set = new TreeSet<>();
         for(Node node: entries) {
             set.add(node);

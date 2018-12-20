@@ -1,3 +1,4 @@
+import java.util.Comparator;
 import java.util.Map;
 
 public class Node<Key extends Comparable, Value extends Comparable> implements Map.Entry<Key, Value> {
@@ -19,13 +20,15 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
         this.height = 1;
     }
 
-    boolean compareValues(Object o) {
-        return this.value.equals(o);
+    boolean compareValues(Value v) {
+        return this.value.equals(v);
     }
 
-    boolean compareKeys(Object o) {
-        return this.key.equals(o);
+    boolean compareKeys(Key k) {
+        return this.key.equals(k);
     }
+
+
 
 
     public Node rotateRight() {
@@ -117,5 +120,15 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
     }
 
 
+    public Comparator<? super Value> comparator() {
+        return (Comparator<Value>) Comparator.naturalOrder();
+    }
+
+    public int compareTo(Object o) {
+        if(this.key.equals(o)) {
+            return 0;
+        }
+        else return value.compareTo(o);
+    }
 }
 
