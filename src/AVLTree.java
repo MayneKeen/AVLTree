@@ -1,6 +1,3 @@
-import javafx.collections.transformation.SortedList;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
-import sun.awt.SunHints;
 
 import java.util.*;
 
@@ -68,7 +65,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     }
 
 
-    public void insert(Key key, Value value) {
+    private void insert(Key key, Value value) {
         Node node = new Node(key, value);
         root = insert(root, node);
         keys.add(key);
@@ -76,7 +73,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
         entries.add(node);
     }
 
-    public void delete(Key key) {
+    private void delete(Key key) {
         root = delete(root, key);
         values.remove(get(key));
         keys.remove(key);
@@ -84,15 +81,13 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     }
 
 
-    Set<Key> keys = new HashSet<>();
-    Set<Entry<Key, Value>> entries = new HashSet<>();
-    Set<Value> values = new HashSet<>();
+    private Set<Key> keys = new HashSet<>();
+    private  Set<Entry<Key, Value>> entries = new HashSet<>();
+    private Set<Value> values = new HashSet<>();
 
 
     private boolean equals(Map<Key, Value> map){
-        if(this.entrySet().equals(map.entrySet()))
-            return true;
-        else return false;
+        return this.entrySet().equals(map.entrySet());
     }
 
     @Override

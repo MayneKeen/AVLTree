@@ -6,31 +6,31 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
     Value value;
     Key key;
 
-    public Node leftChild;
-    public Node rightChild;
-    public Node parent;
+    Node leftChild;
+    Node rightChild;
+    Node parent;
 
 
-    public int height;                            //subtree height
+    private int height;                            //subtree height
 
 
-    public Node(Key key, Value value) {
+    Node(Key key, Value value) {
         this.key = key;
         this.value = value;
         this.height = 1;
     }
 
-    boolean compareValues(Value v) {
+    private boolean compareValues(Value v) {
         return this.value.equals(v);
     }
 
-    boolean compareKeys(Key k) {
+    private boolean compareKeys(Key k) {
         return this.key.equals(k);
     }
 
     Node<Key, Value> findByKey(Key key) {
         Node<Key, Value> node = this;
-        while(!node.key.equals(key) || node == null) {
+        while(!node.key.equals(key)) {
             int comparison = node.key.compareTo(key);
             if(comparison==0)
                 return node;
@@ -38,11 +38,14 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
                 node = node.leftChild;
             if(comparison>0)
                 node = node.rightChild;
+
+            if(node == null)
+                return null;
         }
         return node;
     }
 
-    public Node rotateRight() {
+    private Node rotateRight() {
         Node node = this.leftChild;
 
         this.leftChild = node.rightChild;
@@ -55,7 +58,7 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
         return node;
     }
 
-    public Node rotateLeft() {
+    private Node rotateLeft() {
         Node node = this.rightChild;
 
         this.rightChild = node.leftChild;
@@ -70,7 +73,7 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
 
 
 
-    public void subtreeHeight() {
+    private void subtreeHeight() {
         height = 1;
         if (leftChild != null) {
             height += leftChild.height;
@@ -144,8 +147,10 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
 
 
     private boolean equals(Map.Entry<Key, Value> entry) {
-        return (this.getKey()==null && entry.getKey()==null || this.getKey().equals(entry.getKey())  &&
-                (this.getValue()==null && entry.getValue()==null || this.getValue().equals(entry.getValue())));
+        return (this.getKey()==null ? entry.getKey()==null :
+                this.getKey().equals(entry.getKey()))  &&
+              (this.getValue()==null ? entry.getValue()==null :
+                      this.getValue().equals(entry.getValue()));
     }
 
 
@@ -155,14 +160,6 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
            return equals((Map.Entry<Key, Value>) obj);
        }
        else return false;
-    }
-
-
-    public int compareTo(Object o) {
-        if(this.key.equals(o)) {
-            return 0;
-        }
-        else return value.compareTo(o);
     }
 }
 
