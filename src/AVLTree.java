@@ -5,7 +5,7 @@ import sun.awt.SunHints;
 import java.util.*;
 
 
-public class AVLTree <Key extends Comparable <? super Key>, Value extends Comparable> implements SortedMap<Key, Value> {
+public class AVLTree <Key extends Comparable <? super Key>, Value extends Comparable> implements Map<Key, Value> {
     private Node root;
 
     private Node insert(Node place, Node node) {
@@ -72,50 +72,49 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
         Node node = new Node(key, value);
         root = insert(root, node);
         keys.add(key);
+        values.add(value);
         entries.add(node);
     }
 
     public void delete(Key key) {
         root = delete(root, key);
+        values.remove(get(key));
         keys.remove(key);
         entries.remove(get(key));
     }
 
 
-    List<Key> keys = new ArrayList<>();                                 //lists with related indexes
-    List<Node<Key, Value>> entries = new ArrayList<>();
+    Set<Key> keys = new HashSet<>();
+    Set<Entry<Key, Value>> entries = new HashSet<>();
+    Set<Value> values = new HashSet<>();
 
 
-    @Override
-    public Comparator<? super Key> comparator() {
-        return (Comparator<Key>) Comparator.naturalOrder();
+    private boolean equals(Map<Key, Value> map){
+        if(this.entrySet().equals(map.entrySet()))
+            return true;
+        else return false;
     }
 
     @Override
-    public SortedMap<Key, Value> subMap(Key fromKey, Key toKey) {
-        return null;
+    public boolean equals(Object o) {
+        if(o instanceof Map) {
+            return this.equals((Map<Key, Value>) o);
+        }
+        else return false;
     }
 
-    @Override
-    public SortedMap<Key, Value> headMap(Key toKey) {
-        return null;
-    }
-
-    @Override
-    public SortedMap<Key, Value> tailMap(Key fromKey) {
-        return null;
+    public int hashCode() {
+        int hashCode = 0;
+        for(Entry node: entries) {
+            hashCode+=node.hashCode();
+        }
+        return hashCode;
     }
 
 
-    @Override
-    public Key firstKey() {
-        return keys.get(0);
-    }
 
-    @Override
-    public Key lastKey() {
-        return keys.get(keys.size()-1);
-    }
+
+
 
     @Override
     public int size() {
@@ -129,25 +128,22 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
 
     @Override
     public boolean containsKey(Object key) {
-        return keys.contains(key);
+        if(root!= null) {
+            return root.findByKey((Key) key) == null;
+        }
+        else return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
-        for (Node entry: entries) {
-            if (entry.compareValues((Comparable) value)) {
-                return true;
-            }
-        }
-        return false;
+        return values.contains(value);
     }
 
 
 
     @Override
     public Value get(Object key) {
-        int index = keys.indexOf(key);
-        return entries.get(index).getValue();
+        return (Value) root.findByKey((Key) key).getValue();
     }
 
 
@@ -155,17 +151,16 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     @Override
     public Value put(Key key, Value value) {
         insert(key, value);
-        return entries.get(entries.size()-1).value;
+        return  (Value) root.findByKey(key).getValue();
     }
 
 
 
     @Override
     public Value remove(Object key) {
-        int index = keys.indexOf(key);
-        Node node = entries.get(index);
+        Node<Key, Value> node = root.findByKey((Key) key );
         delete((Key) key);
-        return (Value) node.value;
+        return node.getValue();
     }
 
 
@@ -173,9 +168,8 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     @Override
     public void putAll(Map<? extends Key, ? extends Value> m) {
         for(Key element: m.keySet()) {
-           Key key = element;
            Value value = m.get(element);
-            put(key, value);
+           put(element, value);
         }
     }
 
@@ -184,6 +178,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     @Override
     public void clear() {
         keys.clear();
+        values.clear();
         entries.clear();
         root = null;
     }
@@ -192,31 +187,21 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
 
     @Override
     public Set<Key> keySet() {
-        keys.sort(comparator());
-        Set<Key> set = new TreeSet<>();
-        for(Key key: keys) {
-            set.add(key);
-        }
-        return set;
+        return keys;
     }
 
 
 
     @Override
     public Collection<Value> values() {
-        return null;
+        return values;
     }
 
 
 
     @Override
     public Set<Entry<Key, Value>> entrySet() {
-        entries.sort(Node::compareTo);
-        Set<Entry<Key, Value>> set = new TreeSet<>();
-        for(Node node: entries) {
-            set.add(node);
-        }
-        return set;
+        return entries;
     }
 
 

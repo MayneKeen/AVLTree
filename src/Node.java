@@ -28,8 +28,19 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
         return this.key.equals(k);
     }
 
-
-
+    Node<Key, Value> findByKey(Key key) {
+        Node<Key, Value> node = this;
+        while(!node.key.equals(key) || node == null) {
+            int comparison = node.key.compareTo(key);
+            if(comparison==0)
+                return node;
+            if(comparison<0)
+                node = node.leftChild;
+            if(comparison>0)
+                node = node.rightChild;
+        }
+        return node;
+    }
 
     public Node rotateRight() {
         Node node = this.leftChild;
@@ -123,6 +134,29 @@ public class Node<Key extends Comparable, Value extends Comparable> implements M
     public Comparator<? super Value> comparator() {
         return (Comparator<Value>) Comparator.naturalOrder();
     }
+
+
+    public int hashCode() {
+        return (this.getKey()==null   ? 0 : this.getKey().hashCode()) ^
+              (this.getValue()==null ? 0 : this.getValue().hashCode());
+    }
+
+
+
+    private boolean equals(Map.Entry<Key, Value> entry) {
+        return (this.getKey()==null && entry.getKey()==null || this.getKey().equals(entry.getKey())  &&
+                (this.getValue()==null && entry.getValue()==null || this.getValue().equals(entry.getValue())));
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+       if(obj instanceof Map.Entry) {
+           return equals((Map.Entry<Key, Value>) obj);
+       }
+       else return false;
+    }
+
 
     public int compareTo(Object o) {
         if(this.key.equals(o)) {
