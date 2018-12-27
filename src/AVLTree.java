@@ -1,11 +1,10 @@
-
 import java.util.*;
 
 
-public class AVLTree <Key extends Comparable <? super Key>, Value extends Comparable> implements Map<Key, Value> {
+public class AVLTree <Key extends Comparable <Key>, Value extends Comparable> implements Map<Key, Value> {
     private Node root;
 
-    private Node insert(Node place, Node node) {
+    private Node<Key, Value> insert(Node<Key, Value> place, Node<Key, Value> node) {
         if (place == null) {
             return node;
         }
@@ -66,7 +65,7 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
 
 
     private void insert(Key key, Value value) {
-        Node node = new Node(key, value);
+        Node<Key, Value> node = new Node<>(key, value);
         root = insert(root, node);
         keys.add(key);
         values.add(value);
@@ -74,16 +73,16 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     }
 
     private void delete(Key key) {
-        root = delete(root, key);
         values.remove(get(key));
         keys.remove(key);
-        entries.remove(get(key));
+        entries.remove(root.findByKey(key));
+        root = delete(root, key);
     }
 
 
     private Set<Key> keys = new HashSet<>();
-    private  Set<Entry<Key, Value>> entries = new HashSet<>();
     private Set<Value> values = new HashSet<>();
+    private  Set<Entry<Key, Value>> entries = new HashSet<>();
 
 
     private boolean equals(Map<Key, Value> map){
@@ -105,10 +104,6 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
         }
         return hashCode;
     }
-
-
-
-
 
 
     @Override
@@ -198,6 +193,186 @@ public class AVLTree <Key extends Comparable <? super Key>, Value extends Compar
     public Set<Entry<Key, Value>> entrySet() {
         return entries;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    abstract public class AVLSet<O extends Comparable> implements Set<O> {
+
+        private class Element<O extends Comparable> implements Comparable<O> {
+
+            private O value;
+
+            O previous;
+            O next;
+
+            Element(O value, O previous, O next) {
+                this.value = value;
+                this.previous = previous;
+                this.next = next;
+            }
+
+            @Override
+            public int compareTo(O o) {
+                return this.compareTo(o);
+            }
+
+        }
+
+
+
+
+
+        private O first;
+        private O last;
+        private int size = 0;
+
+        AVLSet(O o) {
+            this.add(o);
+            this.first = o;
+            this.size = 1;
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+
+
+        private boolean addElement(O o) {
+            Element<O> element = new Element<>(o, last, null);
+            last = o;
+            return true;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            AVLIterator iterator = new AVLIterator(this);
+            while (iterator.hasNext()) {
+                if(iterator.next().equals(o)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        @Override
+        public boolean remove(Object o) {
+            AVLIterator iterator = new AVLIterator(this);
+            while (iterator.hasNext()) {
+                if(iterator.next().equals(o)) {
+                    iterator.remove();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
+        public void clear() { }
+
+
+
+
+
+
+
+        @Override
+        public Iterator<O> iterator() {
+            return new AVLIterator(this);
+        }
+
+        private class AVLIterator implements Iterator<O> {
+
+
+
+            private O current;
+            private int quantity;
+            private AVLSet<O> set;
+            List<O> cache = new ArrayList<>();
+
+
+            AVLIterator(AVLSet<O> set){
+                this.set = set;
+                cache.addAll(set);
+                quantity = cache.size();
+            }
+
+
+
+            @Override
+            public boolean hasNext() { return quantity >= 0; }
+
+
+            @Override
+            public O next() throws NoSuchElementException {
+                if (quantity == 0) {
+                    throw new NoSuchElementException("Set is empty.");
+                }
+                current = cache.get(0);
+                cache.remove(0);
+                quantity--;
+                return current;
+            }
+
+
+            @Override
+            public int hashCode() {
+                int hashCode = 0;
+                for(O o: set) {
+                    hashCode += o.hashCode();
+                }
+                return hashCode;
+            }
+
+
+            @Override
+            public void remove() {
+                set.remove(current);
+            }
+        }
+    }
+
+
 
 
 }

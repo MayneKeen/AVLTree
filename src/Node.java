@@ -1,14 +1,14 @@
 import java.util.Comparator;
 import java.util.Map;
 
-public class Node<Key extends Comparable, Value extends Comparable> implements Map.Entry<Key, Value> {
+public class Node<Key extends Comparable<Key>, Value extends Comparable> implements Map.Entry<Key, Value> {
 
     Value value;
     Key key;
 
-    Node leftChild;
-    Node rightChild;
-    Node parent;
+    Node<Key, Value> leftChild;
+    Node<Key, Value> rightChild;
+    Node<Key, Value> parent;
 
 
     private int height;                            //subtree height
